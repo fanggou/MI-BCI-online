@@ -18,9 +18,9 @@ end
 disp('import finish');
 %% 数据预处理
 % EEG = pop_chanedit(EEG, 'lookup', 'standard-10-20-cap81.ced');%使用10-20系统电极定位通道
-% EEG = pop_resample( EEG, 250);   %降采样
-% EEG = filterEEG(EEG, [1 40], 'bandpass'); %4阶巴特沃斯带通滤波器
-% EEG = filterEEG(EEG, [49 51], 'stop');  %50 Hz陷波滤波器  
+EEG = pop_resample( EEG, 250);   %降采样
+EEG = filterEEG(EEG, [1 40], 'bandpass'); %4阶巴特沃斯带通滤波器
+EEG = filterEEG(EEG, [49 51], 'stop');  %50 Hz陷波滤波器  
 %% epoch
 EEG = pop_epoch(EEG, {5}, [0 8]); % 以事件5为中心，时间窗口从0s到10s
 %% 将原始数据、事件标签读取出来根据triggerbox标注的event标签进行切割操作
@@ -37,8 +37,8 @@ EEG.pnts = size(EEG.data, 2);  % 数据点数量
 EEG.srate = 1000;  % 设置采样率
 EEG.xmax = EEG.pnts / EEG.srate;  % xmax根据采样率计算
 EEG = eeg_checkset( EEG );%检查EEG结构体
-% EEG = pop_rmbase(EEG, [0 4000]);
-% EEG = pop_reref( EEG, []);    %全脑平均重参考 ，在ICA之前
+EEG = pop_rmbase(EEG, [0 4000]);%基线矫正
+EEG = pop_reref( EEG, []);    %全脑平均重参考 ，在ICA之前
 
 %% 保存
 start_time = 2;  % 提取MI，开始时间在第4s
@@ -51,8 +51,8 @@ data_transformed = permute(data, [2, 1, 3]);
 data = double(data_transformed);
 sampleRate = EEG.srate;
 labels = EEG.labels; 
-matFileName = 'fang_nopre_03.mat';  
-filePath = 'E:\桌面\BCI_Project\EEG_Data\pre_for_mat_data\fangfang\nopre';  
+matFileName = 'fang_nopre_test04.mat';  
+filePath = 'E:\桌面\BCI_Project\EEG_Data\pre_for_mat_data\fangfang';  
 matFilePath = fullfile(filePath, matFileName);
 save(matFilePath, 'data', 'sampleRate','labels');
 disp(['数据已成功保存为: ', matFilePath]);

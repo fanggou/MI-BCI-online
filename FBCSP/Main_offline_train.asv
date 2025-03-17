@@ -2,15 +2,15 @@ tic
 
 % 加载数据
 % 获取当前脚本所在目录（假设脚本在offline文件夹）
-scriptDir = 'E:\桌面\BCI_Project\EEG_Data\pre_for_mat_data\fangfang';
+scriptDir = 'E:\桌面\BCI_Project\EEG_Data\pre_for_mat_data\CQQ';
 % 构建到上级Data目录的路径
 % dataPath = fullfile(scriptDir, 'merged_data.mat'); 
-dataPath = fullfile(scriptDir, 'fang_merged_data.mat'); 
+dataPath = fullfile(scriptDir, 'CQQ_merged_data.mat'); 
 load(dataPath);
 X_train = double(data); % 训练集pre_A01.mat
-Y_train = labels - 2 ;        % 训练集标签
+Y_train = labels - 2;        % 训练集标签
 
-dataPath = fullfile(scriptDir, 'fang_pre_test.mat'); 
+dataPath = fullfile(scriptDir, 'CQQ_pre_test05.mat'); 
 % dataPath = fullfile(scriptDir, 'Q_V5.mat'); 
 load(dataPath);
 X_test = double(data);  % 测试集
@@ -40,15 +40,15 @@ rank = all_MuI(FBtrainf, Y_train);
 selFeaTrain = FBtrainf(:, rank(1:k, 2)); % 选取前 k 个特征
 
 %% 训练模型（多类分类）
-% svmTemplate = templateSVM(...
-%     'KernelFunction', 'rbf', ...
-%     'BoxConstraint', 2, ...
-%     'KernelScale', 8);
-% 
-% model = fitcecoc(selFeaTrain, Y_train, 'Learners', svmTemplate);
+svmTemplate = templateSVM(...
+    'KernelFunction', 'rbf', ...
+    'BoxConstraint', 2, ...
+    'KernelScale', 8);
 
-model = fitcsvm(selFeaTrain, Y_train, ...
-    'KernelFunction', 'rbf', 'BoxConstraint', 2, 'KernelScale', 8);
+model = fitcecoc(selFeaTrain, Y_train, 'Learners', svmTemplate);
+
+% model = fitcsvm(selFeaTrain, Y_train, ...
+%     'KernelFunction', 'rbf', 'BoxConstraint', 2, 'KernelScale', 8);
 
 
 % 测试集处理
@@ -58,8 +58,8 @@ selFeaTest = fbtestf(:, rank(1:k, 2));
 % 保存模型
 
 saveDir = 'E:\桌面\BCI_Project\formal_project\Offline_model_data';
-save(fullfile(saveDir, 'MI_BCI_TWO_model.mat'), 'model');
-save(fullfile(saveDir, 'FBCSP_ProcessData.mat'), 'rank', 'proj', 'classNum');
+save(fullfile(saveDir, 'MI_BCI_FOUR_model.mat'), 'model');
+save(fullfile(saveDir, 'FBCSP_FOUR_ProcessData.mat'), 'rank', 'proj', 'classNum');
 
 %% 预测并输出结果
 predictlabel = predict(model, selFeaTest);

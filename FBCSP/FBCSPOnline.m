@@ -66,8 +66,8 @@ function features_train=FBCSPOnline(train_data,projMAll,classNum,sampleRate,m,fr
             features_train = [features_train, feature]; 
             
             %调试信息
-            disp(['子频带 ', num2str(i), ' 投影矩阵尺寸: ', num2str(size(currentProj))]);
-            disp(['滤波后数据尺寸: ', num2str(size(filtered))]);
+%             disp(['子频带 ', num2str(i), ' 投影矩阵尺寸: ', num2str(size(currentProj))]);
+%             disp(['滤波后数据尺寸: ', num2str(size(filtered))]);
            
 
         end

@@ -18,7 +18,8 @@ catch e
     msgbox('串口打开失败');
     return;
 end
-disp('串口连接完成。。。。。');
+disp('串口连接完成。。。。。。。');
+disp('TCP连接ing。。。。。。');
 
 
 
@@ -128,8 +129,9 @@ persistent_data_buffer = [];     % 动态缓冲区初始化
 %发送信号相关
 buffer = struct('labels', [], 'confidences', []);
 loopCounter = 0;
-sendInterval = 20;  % 4秒 / 0.2秒 = 20次循环
+sendInterval = 3;  % 4秒 / 0.2秒 = 20次循环
 
+disp('连接完成！实验开始。。。。。。。。');
 try
     dataServer.ResetnUpdate(); % 重置数据流
     while true
@@ -138,15 +140,11 @@ try
         %% ==== 核心处理流程 ====
         % 1. 获取最新数据块
         [raw_data, ~, ~] = dataServer.GetLatestData();
-        % 调试输出原始数据结构
-        disp('====== Raw Data Structure ======');
-        disp(['raw_data类型: ', class(raw_data)]);
-        disp(['raw_data尺寸: ', num2str(size(raw_data))]);
 
         valid_data_cell = raw_data{idx_sensor, idx_subject}; 
         if ~isempty(valid_data_cell)
             % 提取目标通道数据 [nChannels × nSamples]
-            disp(['有效数据块维度: ', num2str(size(valid_data_cell))]); % 应为 [nChan × nSamples]
+%             disp(['有效数据块维度: ', num2str(size(valid_data_cell))]); % 应为 [nChan × nSamples]
             new_block = valid_data_cell(idx_chan, :); 
             
             persistent_data_buffer = [persistent_data_buffer, new_block];
@@ -162,11 +160,11 @@ try
                 %% 2. 实时预处理
                 [processed_data, filter_states] = pre_process_eeg_online( ...
                     persistent_data_buffer(:, end-buffer_size+1:end), 1000, filter_states);
-                disp(['预处理后数据维度: ', num2str(size(processed_data))]); % 应为 [59通道 × 降采样后时间点]
+%                 disp(['预处理后数据维度: ', num2str(size(processed_data))]); % 应为 [59通道 × 降采样后时间点]
                 
                 % 转置数据为 [时间点 × 通道]
                 processed_data_transposed = processed_data'; % [425×59]
-                disp(['预处理通过，转置之后的数据维度', size(processed_data_transposed)]);%调试输出代码           
+%                 disp(['预处理通过，转置之后的数据维度', size(processed_data_transposed)]);%调试输出代码           
                 
                 %% 3. 特征提取
                 features = FBCSPOnline(...
@@ -192,7 +190,7 @@ try
 
             %% 5. 延迟控制
             elapsed = toc(t_start); % 计算处理耗时
-            target_interval = 0.2;  % 目标处理间隔200ms（根据实际调整）
+            target_interval = 0.4;  % 目标处理间隔200ms（根据实际调整）
             if elapsed < target_interval
                 pause(target_interval - elapsed); 
             else

@@ -19,7 +19,7 @@ function [EEG_S, indx] = EEG_splice(EEG_DATA, EEG_EVENT)
 
     % 参数定义
     target_duration_seconds = 8;  
-    srate = 1000;                   
+    srate = 250;                   
     duration = target_duration_seconds * srate; 
     EEG_MI = [];      
     EEG_labels = [];  
